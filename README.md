@@ -1,0 +1,1 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>AIVT</title><link rel="stylesheet" href="style.css"></head><body><div id="app"><button id="start-btn">Chào bạn</button><div id="chat"></div></div><script src="script.js"></script></body></html>
