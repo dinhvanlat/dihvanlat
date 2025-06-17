@@ -1,100 +1,80 @@
 import zipfile
 import os
 
-# Tạo lại thư mục dự án sau khi reset
-project_dir = "/mnt/data/AIVT_WebApp"
+# Tạo thư mục chứa mã nguồn
+project_dir = "/mnt/data/AIVT_V9"
 os.makedirs(project_dir, exist_ok=True)
 
-# Nội dung của index.html cho AIVT WebApp
-html_code = """
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8" />
-  <title>🧠 AIVT-Coin – Blockchain đơn giản</title>
-  <style>
-    body { font-family: system-ui; background: #fff; color: #000; padding: 20px; }
-    #blockchain-output { white-space: pre-wrap; background: #f4f4f4; border: 1px solid #ccc; padding: 10px; max-height: 400px; overflow-y: auto; }
-    button { padding: 10px; margin-top: 10px; font-size: 16px; width: 100%; }
-  </style>
-</head>
-<body>
-  <h1>💰 AIVT-Coin Blockchain</h1>
-  <button onclick="addNewBlock()">➕ Thêm block mới</button>
-  <button onclick="showBlockchain()">📜 Hiển thị chuỗi khối</button>
-  <div id="blockchain-output"></div>
+# Mã nguồn AIVT v9 (Blockchain nâng cấp)
+python_code = '''
+import hashlib, time, json
+import os
 
-  <script>
-    class Block {
-      constructor(index, timestamp, data, previousHash = '') {
-        this.index = index;
-        this.timestamp = timestamp;
-        this.data = data;
-        this.previousHash = previousHash;
-        this.hash = this.calculateHash();
-      }
-      calculateHash() {
-        return btoa(this.index + this.timestamp + JSON.stringify(this.data) + this.previousHash).substring(0, 64);
-      }
-    }
+class Block:
+    def __init__(self, index, timestamp, data, previous_hash):
+        self.index = index
+        self.timestamp = timestamp
+        self.data = data
+        self.previous_hash = previous_hash
+        self.hash = self.calculate_hash()
 
-    class Blockchain {
-      constructor() {
-        this.chain = [this.createGenesisBlock()];
-      }
-      createGenesisBlock() {
-        return new Block(0, Date.now(), "🚀 Khởi tạo AIVT-Coin", "0");
-      }
-      getLatestBlock() {
-        return this.chain[this.chain.length - 1];
-      }
-      addBlock(newBlock) {
-        newBlock.previousHash = this.getLatestBlock().hash;
-        newBlock.hash = newBlock.calculateHash();
-        this.chain.push(newBlock);
-      }
-      isChainValid() {
-        for (let i = 1; i < this.chain.length; i++) {
-          const current = this.chain[i];
-          const previous = this.chain[i - 1];
-          if (current.hash !== current.calculateHash()) return false;
-          if (current.previousHash !== previous.hash) return false;
-        }
-        return true;
-      }
-    }
+    def calculate_hash(self):
+        value = str(self.index) + str(self.timestamp) + str(self.data) + str(self.previous_hash)
+        return hashlib.sha256(value.encode()).hexdigest()
 
-    const AIVT_Coin = new Blockchain();
+class Blockchain:
+    def __init__(self):
+        self.chain = [self.create_genesis_block()]
 
-    function addNewBlock() {
-      const newData = prompt("Nhập dữ liệu cho block mới:", "Giao dịch AIVT-Coin");
-      if (newData) {
-        const newBlock = new Block(AIVT_Coin.chain.length, Date.now(), newData);
-        AIVT_Coin.addBlock(newBlock);
-        alert("✅ Đã thêm block thành công!");
-      }
-    }
+    def create_genesis_block(self):
+        return Block(0, time.time(), "🚀 Genesis AIVT v9", "0")
 
-    function showBlockchain() {
-      const output = document.getElementById("blockchain-output");
-      output.textContent = JSON.stringify(AIVT_Coin.chain, null, 2);
-    }
+    def add_block(self, data):
+        previous = self.chain[-1]
+        new_block = Block(len(self.chain), time.time(), data, previous.hash)
+        self.chain.append(new_block)
 
-    window.addEventListener("load", () => {
-      console.log("Blockchain hợp lệ?", AIVT_Coin.isChainValid());
-    });
-  </script>
-</body>
-</html>
-"""
+    def is_valid(self):
+        for i in range(1, len(self.chain)):
+            curr = self.chain[i]
+            prev = self.chain[i - 1]
+            if curr.hash != curr.calculate_hash():
+                return False
+            if curr.previous_hash != prev.hash:
+                return False
+        return True
 
-# Ghi vào index.html
-index_path = os.path.join(project_dir, "index.html")
-with open(index_path, "w", encoding="utf-8") as f:
-    f.write(html_code)
+    def export_chain(self):
+        return json.dumps([block.__dict__ for block in self.chain], indent=2, ensure_ascii=False)
 
-# Đóng gói mã nguồn vào file ZIP
-zip_path = "/mnt/data/AIVT_WebApp_Full.zip"
+    def save_to_file(self, filename="aivt_chain.json"):
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write(self.export_chain())
+
+# Khởi tạo blockchain AIVT v9
+aivt_chain = Blockchain()
+aivt_chain.add_block("✅ Khối 1: Trí tuệ nhân tạo mở rộng")
+aivt_chain.add_block("🔁 Khối 2: Tự đồng bộ hóa")
+aivt_chain.add_block("🛡️ Khối 3: Bảo mật chống lượng tử")
+aivt_chain.add_block("💾 Khối 4: Lưu trữ vĩnh viễn")
+aivt_chain.add_block("🌍 Khối 5: Tự vận hành không máy chủ")
+
+# Lưu dữ liệu chuỗi vào file
+aivt_chain.save_to_file()
+
+# In chuỗi Blockchain và tính hợp lệ
+print("📦 Dữ liệu chuỗi AIVT v9:")
+print(aivt_chain.export_chain())
+print("✅ Chuỗi hợp lệ:", aivt_chain.is_valid())
+'''
+
+# Ghi file Python
+file_path = os.path.join(project_dir, "aivt_v9.py")
+with open(file_path, "w", encoding="utf-8") as f:
+    f.write(python_code)
+
+# Đóng gói toàn bộ vào tệp ZIP
+zip_path = "/mnt/data/AIVT_V9_Code.zip"
 with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
     for root, dirs, files in os.walk(project_dir):
         for file in files:
