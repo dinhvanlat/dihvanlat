@@ -82,4 +82,4 @@ with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
             relative_path = os.path.relpath(full_path, project_dir)
             zipf.write(full_path, arcname=relative_path)
 
-zip_path
+print("✅ Đã tạo file ZIP tại:", zip_path)
